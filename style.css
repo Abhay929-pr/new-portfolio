@@ -1,35 +1,63 @@
+
 /** 
-  ============================
-  Abhay Jadli Portfolio Styles
-  ============================
-  - Dark mode, vibrant blue accent
-  - Responsive, modern, animated
-  - Custom cursor, sticky nav, 3D hero, interactive sections
+  ==========================================
+  Abhay Jadli Portfolio Styles (Black & White)
+  ==========================================
+  - Minimalistic black-and-white theme
+  - Grayscale (default) & High-Contrast toggle
+  - Responsive, modern, smooth GSAP animations
+  - Custom white cursor with glow, sticky nav, 3D hero
   - CSS Variables for easy theming
 **/
 
 :root {
-  --color-bg: #10131a;
-  --color-bg-alt: #181c25;
-  --color-nav-bg: rgba(16, 19, 26, 0.95);
-  --color-card-bg: #181c25;
-  --color-accent: #00aeef;
-  --color-accent-glow: #00aeef80;
-  --color-text: #f5f7fa;
-  --color-text-muted: #b0b8c9;
-  --color-border: #23283a;
-  --color-shadow: 0 4px 32px 0 #00aeef22;
+  /* Grayscale Mode (Default) */
+  --color-bg: #18191a;
+  --color-bg-alt: #232425;
+  --color-nav-bg: rgba(24, 25, 26, 0.96);
+  --color-card-bg: #232425;
+  --color-accent: #eaeaea;
+  --color-accent-glow: #ffffff40;
+  --color-text: #f8f8f8;
+  --color-text-muted: #bdbdbd;
+  --color-border: #2c2c2c;
+  --color-shadow: 0 4px 32px 0 #ffffff18;
   --font-main: 'Inter', 'Segoe UI', Arial, sans-serif;
-  --transition: 0.3s cubic-bezier(.77,0,.18,1);
+  --transition: 0.35s cubic-bezier(.77,0,.18,1);
   --nav-height: 72px;
-  --cursor-size: 12px;
-  --cursor-expand: 36px;
+  --cursor-size: 14px;
+  --cursor-ring-size: 38px;
+  --cursor-glow: 0 0 16px 4px #fff, 0 0 0 0 #fff;
+  --icon-filter: grayscale(1) brightness(1.1);
+  --img-filter: grayscale(1) contrast(1.05);
+  --cta-glow: 0 0 32px 8px #fff;
+  --modal-bg: rgba(24, 25, 26, 0.96);
+  --selection-bg: #fff;
+  --selection-color: #18191a;
+}
+
+body.high-contrast {
+  /* High-Contrast Mode */
+  --color-bg: #000;
+  --color-bg-alt: #111;
+  --color-nav-bg: #000;
+  --color-card-bg: #111;
+  --color-accent: #fff;
+  --color-accent-glow: #fff;
+  --color-text: #fff;
+  --color-text-muted: #fff;
+  --color-border: #fff;
+  --color-shadow: 0 4px 32px 0 #fff2;
+  --icon-filter: none;
+  --img-filter: grayscale(1) contrast(1.2) brightness(1.1);
+  --cta-glow: 0 0 48px 8px #fff;
+  --modal-bg: rgba(0,0,0,0.98);
+  --selection-bg: #fff;
+  --selection-color: #000;
 }
 
 /* Reset & Base Styles */
-*,
-*::before,
-*::after {
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
@@ -46,23 +74,26 @@ body {
   min-height: 100vh;
   line-height: 1.6;
   overflow-x: hidden;
+  transition: background var(--transition), color var(--transition);
 }
 
 a {
   color: var(--color-accent);
   text-decoration: none;
-  transition: color var(--transition);
+  transition: color var(--transition), text-shadow var(--transition);
 }
 
 a:hover, a:focus {
   color: #fff;
-  text-shadow: 0 0 8px var(--color-accent-glow);
+  text-shadow: 0 0 8px #fff, 0 0 2px #fff;
 }
 
 img {
   max-width: 100%;
   display: block;
   border-radius: 8px;
+  filter: var(--img-filter);
+  transition: filter var(--transition);
 }
 
 section {
@@ -75,6 +106,8 @@ h1, h2, h3, h4 {
   font-weight: 700;
   color: var(--color-text);
   margin-top: 0;
+  letter-spacing: -0.5px;
+  transition: color var(--transition);
 }
 
 h1 {
@@ -96,6 +129,7 @@ h3 {
 p {
   color: var(--color-text-muted);
   font-size: 1.1rem;
+  transition: color var(--transition);
 }
 
 ::-webkit-scrollbar {
@@ -110,25 +144,56 @@ p {
 /* =========================
    Custom Cursor
    ========================= */
-#custom-cursor {
+#custom-cursor, #custom-cursor-ring {
   position: fixed;
-  top: 0; left: 0;
-  width: var(--cursor-size);
-  height: var(--cursor-size);
-  background: var(--color-accent);
-  border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
-  transform: translate(-50%, -50%) scale(1);
-  transition: transform 0.18s cubic-bezier(.77,0,.18,1), background 0.2s;
-  box-shadow: 0 0 16px 2px var(--color-accent-glow);
-  mix-blend-mode: lighten;
+  left: 0; top: 0;
+  transform: translate(-50%, -50%);
+  transition: 
+    transform 0.18s cubic-bezier(.77,0,.18,1),
+    background 0.2s,
+    box-shadow 0.25s;
+}
+
+#custom-cursor {
+  width: var(--cursor-size);
+  height: var(--cursor-size);
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px 2px #fff, 0 0 0 0 #fff;
+  mix-blend-mode: difference;
+  transition: 
+    transform 0.18s cubic-bezier(.77,0,.18,1),
+    background 0.2s,
+    box-shadow 0.25s;
 }
 
 #custom-cursor.cursor-hover {
-  transform: translate(-50%, -50%) scale(2.5);
+  transform: translate(-50%, -50%) scale(2.2);
   background: #fff;
-  box-shadow: 0 0 32px 8px var(--color-accent-glow);
+  box-shadow: 0 0 24px 8px #fff, 0 0 0 0 #fff;
+}
+
+#custom-cursor-ring {
+  width: var(--cursor-ring-size);
+  height: var(--cursor-ring-size);
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: var(--cursor-glow);
+  opacity: 0.45;
+  transition: 
+    transform 0.18s cubic-bezier(.77,0,.18,1),
+    border-color 0.2s,
+    box-shadow 0.25s,
+    opacity 0.2s;
+}
+
+#custom-cursor-ring.cursor-hover {
+  transform: translate(-50%, -50%) scale(1.5);
+  border-color: #fff;
+  box-shadow: 0 0 32px 12px #fff, 0 0 0 0 #fff;
+  opacity: 0.7;
 }
 
 /* Hide default cursor */
@@ -165,6 +230,7 @@ nav.scrolled {
   letter-spacing: 2px;
   text-transform: uppercase;
   user-select: none;
+  transition: color var(--transition);
 }
 
 .nav-links {
@@ -210,14 +276,45 @@ nav.scrolled {
 .nav-icons a {
   color: var(--color-accent);
   font-size: 1.3rem;
-  transition: color var(--transition), transform 0.2s;
+  transition: color var(--transition), transform 0.2s, filter var(--transition);
   display: flex;
   align-items: center;
+  filter: var(--icon-filter);
 }
 
 .nav-icons a:hover {
   color: #fff;
   transform: scale(1.2) rotate(-8deg);
+  filter: none;
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  margin-left: 1.2rem;
+  background: none;
+  border: 2px solid var(--color-accent);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: 
+    background var(--transition),
+    color var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
+  box-shadow: 0 0 0 0 #fff;
+}
+
+.theme-toggle-btn:hover, .theme-toggle-btn:focus {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border-color: #fff;
+  box-shadow: 0 0 16px 2px #fff;
 }
 
 /* Hamburger for mobile */
@@ -300,7 +397,8 @@ nav.scrolled {
   color: #fff;
   margin-bottom: 1.2rem;
   letter-spacing: -2px;
-  text-shadow: 0 2px 32px #00aeef22;
+  text-shadow: 0 2px 32px #fff2;
+  transition: color var(--transition), text-shadow var(--transition);
 }
 
 .hero .typing {
@@ -311,6 +409,7 @@ nav.scrolled {
   letter-spacing: 1px;
   margin-bottom: 2.2rem;
   display: inline-block;
+  transition: color var(--transition);
 }
 
 .hero .cta-btn {
@@ -318,13 +417,17 @@ nav.scrolled {
   padding: 0.95em 2.2em;
   font-size: 1.2rem;
   font-weight: 700;
-  color: #fff;
-  background: var(--color-accent);
+  color: var(--color-bg);
+  background: #fff;
   border: none;
   border-radius: 32px;
-  box-shadow: 0 0 24px 0 var(--color-accent-glow);
+  box-shadow: var(--cta-glow);
   cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s, transform 0.18s;
+  transition: 
+    background 0.2s, 
+    color 0.2s, 
+    box-shadow 0.2s, 
+    transform 0.18s;
   outline: none;
   position: relative;
   overflow: hidden;
@@ -335,16 +438,16 @@ nav.scrolled {
   position: absolute;
   inset: 0;
   border-radius: 32px;
-  box-shadow: 0 0 32px 8px var(--color-accent-glow);
+  box-shadow: 0 0 32px 8px #fff;
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
 }
 
 .hero .cta-btn:hover, .hero .cta-btn:focus {
-  background: #fff;
-  color: var(--color-accent);
-  box-shadow: 0 0 48px 8px var(--color-accent-glow);
+  background: var(--color-bg);
+  color: #fff;
+  box-shadow: 0 0 64px 12px #fff;
   transform: scale(1.06);
 }
 
@@ -372,7 +475,7 @@ nav.scrolled {
   aspect-ratio: 1/1;
   background: var(--color-bg-alt);
   border-radius: 18px;
-  box-shadow: 0 4px 32px 0 #00aeef22;
+  box-shadow: 0 4px 32px 0 #fff2;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -384,6 +487,8 @@ nav.scrolled {
   height: 100%;
   object-fit: cover;
   border-radius: 18px;
+  filter: var(--img-filter);
+  transition: filter var(--transition);
 }
 
 .about-bio {
@@ -437,21 +542,27 @@ nav.scrolled {
   position: relative;
   background: var(--color-card-bg);
   border-radius: 14px;
-  box-shadow: 0 2px 16px 0 #00aeef11;
+  box-shadow: 0 2px 16px 0 #fff1;
   padding: 28px 0 18px 0;
-  transition: transform 0.22s cubic-bezier(.77,0,.18,1), box-shadow 0.22s;
+  transition: 
+    transform 0.22s cubic-bezier(.77,0,.18,1), 
+    box-shadow 0.22s, 
+    filter var(--transition);
   cursor: pointer;
   width: 100px;
   height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
+  filter: var(--icon-filter);
 }
 
 .skill-item:hover, .skill-item:focus {
   transform: scale(1.13) translateY(-6px);
-  box-shadow: 0 6px 32px 0 var(--color-accent-glow);
+  box-shadow: 0 6px 32px 0 #fff;
   z-index: 2;
+  filter: none;
+  outline: none;
 }
 
 .skill-item img, .skill-item svg {
@@ -459,6 +570,13 @@ nav.scrolled {
   height: 48px;
   object-fit: contain;
   display: block;
+  filter: var(--icon-filter);
+  transition: filter var(--transition);
+}
+
+.skill-item:hover img, .skill-item:focus img,
+.skill-item:hover svg, .skill-item:focus svg {
+  filter: none;
 }
 
 .skill-tooltip {
@@ -466,8 +584,8 @@ nav.scrolled {
   bottom: 110%;
   left: 50%;
   transform: translateX(-50%) scale(0.95);
-  background: var(--color-accent);
-  color: #fff;
+  background: #fff;
+  color: #18191a;
   padding: 6px 16px;
   border-radius: 8px;
   font-size: 1rem;
@@ -476,7 +594,7 @@ nav.scrolled {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.18s, transform 0.18s;
-  box-shadow: 0 2px 12px 0 var(--color-accent-glow);
+  box-shadow: 0 2px 12px 0 #fff8;
   z-index: 10;
 }
 
@@ -505,9 +623,9 @@ nav.scrolled {
 .project-card {
   background: var(--color-card-bg);
   border-radius: 18px;
-  box-shadow: 0 4px 32px 0 #00aeef11;
+  box-shadow: 0 4px 32px 0 #fff1;
   overflow: hidden;
-  transition: box-shadow 0.22s, transform 0.22s;
+  transition: box-shadow 0.22s, transform 0.22s cubic-bezier(.77,0,.18,1);
   cursor: pointer;
   perspective: 900px;
   position: relative;
@@ -515,11 +633,13 @@ nav.scrolled {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  will-change: transform;
 }
 
 .project-card:hover, .project-card:focus {
-  box-shadow: 0 8px 48px 0 var(--color-accent-glow);
+  box-shadow: 0 8px 48px 0 #fff;
   z-index: 2;
+  outline: none;
 }
 
 .project-card .project-img {
@@ -528,6 +648,12 @@ nav.scrolled {
   object-fit: cover;
   border-radius: 18px 18px 0 0;
   background: #222;
+  filter: var(--img-filter);
+  transition: filter var(--transition);
+}
+
+.project-card:hover .project-img, .project-card:focus .project-img {
+  filter: none;
 }
 
 .project-card .project-content {
@@ -559,8 +685,8 @@ nav.scrolled {
 }
 
 .project-card .project-tag {
-  background: var(--color-accent);
-  color: #fff;
+  background: #fff;
+  color: #18191a;
   font-size: 0.92rem;
   padding: 3px 12px;
   border-radius: 8px;
@@ -579,24 +705,20 @@ nav.scrolled {
   color: var(--color-accent);
   font-size: 1.2rem;
   transition: color var(--transition), transform 0.18s;
+  filter: var(--icon-filter);
 }
 
 .project-card .project-link:hover {
   color: #fff;
   transform: scale(1.18) rotate(-6deg);
-}
-
-/* 3D tilt effect (handled by JS, but add transition for smoothness) */
-.project-card {
-  transition: box-shadow 0.22s, transform 0.22s cubic-bezier(.77,0,.18,1);
-  will-change: transform;
+  filter: none;
 }
 
 /* Modal Styles */
 .project-modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(16, 19, 26, 0.92);
+  background: var(--modal-bg);
   z-index: 2000;
   display: flex;
   align-items: center;
@@ -614,13 +736,14 @@ nav.scrolled {
 .project-modal {
   background: var(--color-card-bg);
   border-radius: 18px;
-  box-shadow: 0 8px 64px 0 var(--color-accent-glow);
+  box-shadow: 0 8px 64px 0 #fff;
   max-width: 520px;
   width: 92vw;
   padding: 2.5rem 2rem 2rem 2rem;
   position: relative;
   color: var(--color-text);
   animation: modalIn 0.5s cubic-bezier(.77,0,.18,1);
+  transition: background var(--transition), color var(--transition);
 }
 
 @keyframes modalIn {
@@ -664,11 +787,13 @@ nav.scrolled {
   color: var(--color-accent);
   font-size: 1.15rem;
   transition: color var(--transition), transform 0.18s;
+  filter: var(--icon-filter);
 }
 
 .project-modal .modal-link:hover {
   color: #fff;
   transform: scale(1.13) rotate(-6deg);
+  filter: none;
 }
 
 /* =========================
@@ -707,16 +832,23 @@ nav.scrolled {
   border-radius: 50%;
   color: var(--color-accent);
   font-size: 2.1rem;
-  box-shadow: 0 2px 16px 0 var(--color-accent-glow);
-  transition: background 0.2s, color 0.2s, transform 0.18s, box-shadow 0.2s;
+  box-shadow: 0 2px 16px 0 #fff;
+  transition: 
+    background 0.2s, 
+    color 0.2s, 
+    transform 0.18s, 
+    box-shadow 0.2s,
+    filter var(--transition);
   position: relative;
+  filter: var(--icon-filter);
 }
 
 .contact-icon-link:hover, .contact-icon-link:focus {
-  background: var(--color-accent);
-  color: #fff;
+  background: #fff;
+  color: #18191a;
   transform: scale(1.13) rotate(-8deg);
-  box-shadow: 0 6px 32px 0 var(--color-accent-glow);
+  box-shadow: 0 6px 32px 0 #fff;
+  filter: none;
 }
 
 .contact-email {
@@ -791,11 +923,11 @@ nav.scrolled {
    Animations & Utilities
    ========================= */
 .glow {
-  box-shadow: 0 0 24px 0 var(--color-accent-glow);
+  box-shadow: 0 0 24px 0 #fff;
 }
 
 .text-glow {
-  text-shadow: 0 0 8px var(--color-accent-glow);
+  text-shadow: 0 0 8px #fff;
 }
 
 .sr-only {
@@ -811,8 +943,8 @@ nav.scrolled {
    Miscellaneous
    ========================= */
 ::selection {
-  background: var(--color-accent);
-  color: #fff;
+  background: var(--selection-bg);
+  color: var(--selection-color);
 }
 
 .fade-in {

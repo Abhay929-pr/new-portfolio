@@ -1,5 +1,6 @@
+
 // =====================
-// Abhay Jadli Portfolio - script.js
+// Abhay Jadli Portfolio - script.js (Black & White Theme Version)
 // =====================
 
 // --- 1. Google Fonts Loader (for Inter) ---
@@ -29,9 +30,10 @@
   document.head.appendChild(threeScript);
 })();
 
-// --- 3. Custom Cursor Implementation ---
+// --- 3. Custom Cursor: White Dot + Glowing Ring ---
 const cursor = document.createElement('div');
 cursor.id = 'custom-cursor';
+cursor.innerHTML = '<div class="cursor-dot"></div><div class="cursor-ring"></div>';
 document.body.appendChild(cursor);
 
 const cursorStyle = document.createElement('style');
@@ -39,21 +41,40 @@ cursorStyle.innerHTML = `
 #custom-cursor {
   position: fixed;
   top: 0; left: 0;
-  width: 14px; height: 14px;
-  background: var(--accent);
-  border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
+  width: 44px; height: 44px;
   transform: translate(-50%, -50%);
-  transition: width 0.18s cubic-bezier(.4,0,.2,1), height 0.18s cubic-bezier(.4,0,.2,1), background 0.18s;
   mix-blend-mode: lighten;
-  box-shadow: 0 0 12px 2px var(--accent);
 }
-#custom-cursor.cursor-hover {
-  width: 36px;
-  height: 36px;
-  background: rgba(0,174,239,0.18);
-  box-shadow: 0 0 32px 8px var(--accent);
+#custom-cursor .cursor-dot {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 10px; height: 10px;
+  background: #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px 2px #fff, 0 0 0 0 #fff;
+  transition: width 0.18s, height 0.18s, box-shadow 0.18s;
+}
+#custom-cursor .cursor-ring {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 36px; height: 36px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  opacity: 0.35;
+  transform: translate(-50%, -50%) scale(1);
+  transition: transform 0.22s cubic-bezier(.4,0,.2,1), opacity 0.18s;
+  box-shadow: 0 0 16px 2px #fff;
+}
+#custom-cursor.cursor-hover .cursor-dot {
+  width: 18px; height: 18px;
+  box-shadow: 0 0 16px 4px #fff, 0 0 0 0 #fff;
+}
+#custom-cursor.cursor-hover .cursor-ring {
+  transform: translate(-50%, -50%) scale(1.5);
+  opacity: 0.55;
 }
 @media (max-width: 900px) {
   #custom-cursor { display: none !important; }
@@ -80,7 +101,7 @@ animateCursor();
 
 // Expand cursor on interactive elements
 function setCursorHoverEvents() {
-  const hoverables = document.querySelectorAll('a, button, .cursor-hoverable, .skill-icon, .project-card');
+  const hoverables = document.querySelectorAll('a, button, .cursor-hoverable, .skill-icon, .project-card, .theme-toggle');
   hoverables.forEach(el => {
     el.addEventListener('mouseenter', () => cursor.classList.add('cursor-hover'));
     el.addEventListener('mouseleave', () => cursor.classList.remove('cursor-hover'));
@@ -150,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typingEl) typeLoop();
 });
 
-// --- 7. Three.js Hero Background (Constellation) ---
+// --- 7. Three.js Hero Background (White Constellation) ---
 function initThreeHero() {
   if (!window.THREE) {
     setTimeout(initThreeHero, 100);
@@ -178,7 +199,7 @@ function initThreeHero() {
     );
   }
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  const material = new THREE.PointsMaterial({ color: 0x00aeef, size: 2.2, transparent: true, opacity: 0.7 });
+  const material = new THREE.PointsMaterial({ color: 0xffffff, size: 2.2, transparent: true, opacity: 0.7 });
   const points = new THREE.Points(geometry, material);
   scene.add(points);
 
@@ -288,9 +309,11 @@ function tiltCard(card) {
     const cx = rect.width/2, cy = rect.height/2;
     const dx = (x - cx) / cx, dy = (y - cy) / cy;
     card.style.transform = `rotateY(${dx*10}deg) rotateX(${-dy*10}deg) scale(1.04)`;
+    card.classList.add('tilted');
   });
   card.addEventListener('mouseleave', () => {
     card.style.transform = '';
+    card.classList.remove('tilted');
   });
 }
 document.addEventListener('DOMContentLoaded', () => {
@@ -390,10 +413,89 @@ body.modal-open {
 `;
 document.head.appendChild(styleModalOpen);
 
-// --- 15. Utility: Re-apply cursor events on DOM update (for SPA-like behavior) ---
+// --- 15. Theme Toggle: Grayscale <-> High-Contrast Black/White ---
+const THEME_KEY = 'ajadli-theme';
+function setTheme(mode, animate = true) {
+  const root = document.documentElement;
+  if (mode === 'contrast') {
+    if (animate && window.gsap) {
+      gsap.to(root, {
+        '--bg': '#000',
+        '--bg-alt': '#111',
+        '--text': '#fff',
+        '--text-alt': '#fff',
+        '--accent': '#fff',
+        '--gray': '#fff',
+        '--border': '#fff',
+        '--shadow': '0 0 24px 0 #fff',
+        duration: 0.6,
+        overwrite: true
+      });
+    } else {
+      root.style.setProperty('--bg', '#000');
+      root.style.setProperty('--bg-alt', '#111');
+      root.style.setProperty('--text', '#fff');
+      root.style.setProperty('--text-alt', '#fff');
+      root.style.setProperty('--accent', '#fff');
+      root.style.setProperty('--gray', '#fff');
+      root.style.setProperty('--border', '#fff');
+      root.style.setProperty('--shadow', '0 0 24px 0 #fff');
+    }
+    root.setAttribute('data-theme', 'contrast');
+  } else {
+    // Grayscale mode (default)
+    if (animate && window.gsap) {
+      gsap.to(root, {
+        '--bg': '#18191a',
+        '--bg-alt': '#232425',
+        '--text': '#f7f7f7',
+        '--text-alt': '#e0e0e0',
+        '--accent': '#fff',
+        '--gray': '#bdbdbd',
+        '--border': '#333',
+        '--shadow': '0 0 16px 0 #fff',
+        duration: 0.6,
+        overwrite: true
+      });
+    } else {
+      root.style.setProperty('--bg', '#18191a');
+      root.style.setProperty('--bg-alt', '#232425');
+      root.style.setProperty('--text', '#f7f7f7');
+      root.style.setProperty('--text-alt', '#e0e0e0');
+      root.style.setProperty('--accent', '#fff');
+      root.style.setProperty('--gray', '#bdbdbd');
+      root.style.setProperty('--border', '#333');
+      root.style.setProperty('--shadow', '0 0 16px 0 #fff');
+    }
+    root.setAttribute('data-theme', 'grayscale');
+  }
+  localStorage.setItem(THEME_KEY, mode);
+  // Update theme toggle icon
+  const toggleBtn = document.querySelector('.theme-toggle');
+  if (toggleBtn) {
+    toggleBtn.setAttribute('aria-label', mode === 'contrast' ? 'Switch to grayscale mode' : 'Switch to high-contrast mode');
+    toggleBtn.classList.toggle('contrast', mode === 'contrast');
+  }
+}
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'grayscale';
+  setTheme(current === 'grayscale' ? 'contrast' : 'grayscale');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  // Set initial theme
+  const saved = localStorage.getItem(THEME_KEY);
+  setTheme(saved === 'contrast' ? 'contrast' : 'grayscale', false);
+  // Theme toggle button
+  const toggleBtn = document.querySelector('.theme-toggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', toggleTheme);
+  }
+});
+
+// --- 16. Utility: Re-apply cursor events on DOM update (for SPA-like behavior) ---
 const observer = new MutationObserver(setCursorHoverEvents);
 observer.observe(document.body, { childList: true, subtree: true });
 
 // =====================
-// End of script.js
+// End of script.js (Black & White Theme Version)
 // =====================
